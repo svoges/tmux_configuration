@@ -1,0 +1,236 @@
+alias cls="clear"
+
+alias cd.="cd .."
+alias cd2.="cd ../.."
+alias cd3.="cd ../../.."
+alias cd4.="cd ../../../.."
+alias cd5.="cd ../../../../.."
+alias cd6.="cd ../../../../../.."
+
+alias g="git"
+alias gt="git status"
+alias gd="git diff"
+alias gh="git hist -20"
+alias gc="git commit -a"
+alias gr="git reset"
+alias gs="git status"
+alias gl="git log"
+alias dbdo="bundle exec rake db:do_over"
+alias dbdos="bundle exec rake db:do_schema"
+alias dbtp="bundle exec rake db:truncate db:populate_data"
+alias cdbrain="cd ~/bt"
+
+alias inferior-slime="~/bt/inferior-slime/bin/inferior-slime-server"
+alias bi="bundle install"
+alias be="bundle exec"
+alias boomstick="shotgun -o 0.0.0.0"
+alias btaegis="cd ~/bt/aegis"
+alias btandroid="cd ~/bt/braintree-android-encryption"
+alias btauthy="cd ~/bt/authy"
+alias btbai="cd ~/bt/bai_parser"
+alias btbilling="cd ~/bt/billing"
+alias btbroxy="cd ~/bt/broxy"
+alias btcheckout="cd ~/bt/checkout"
+alias btdotnet="cd ~/bt/braintree-dotnet"
+alias btfunding="cd ~/bt/funding"
+alias btg="cd ~/bt/gateway"
+alias btgist="cd ~/bt/gist"
+alias bthookshot="cd ~/bt/hookshot"
+alias btinf="cd ~/bt/infrastructure"
+alias btint="cd ~/bt/integrations"
+alias btios="cd ~/bt/braintree-ios-encryption"
+alias btjava="cd ~/bt/braintree-java"
+alias btmigrations="cd ~/bt/merchant_data_import_tool"
+alias btnode="cd ~/bt/braintree-node"
+alias btot="cd ~/bt/ot_vault"
+alias btperl="cd ~/bt/braintree-perl"
+alias btphp="cd ~/bt/braintree-php"
+alias btprovisioner="cd ~/bt/provisioner"
+alias btprov="btprovisioner"
+alias btp="btprovisioner"
+alias btpython="cd ~/bt/braintree-python"
+alias btruby="cd ~/bt/braintree-ruby"
+alias btspy="cd ~/bt/spy"
+alias btsys="cd ~/bt/system-scripts"
+alias btwindows="cd ~/bt/braintree-windows-encryption"
+alias gateway="cd ~/bt/gateway"
+alias btlogin="cd ~/bt/login"
+alias btapply="cd ~/bt/apply"
+alias btwarp="cd ~/bt/warp"
+alias btbraintreepayments="cd ~/bt/braintreepayments.com"
+alias btmarketing="cd ~/bt/braintreepayments.com"
+alias btm="btmarketing"
+alias btww="cd ~/bt/webhook_worker"
+alias btvt="cd ~/bt/venmo-touch"
+
+alias btdotnetex="cd ~/bt/braintree-dotnet-examples"
+alias btjavaex="cd ~/bt/braintree-java-examples"
+alias btphpex="cd ~/bt/braintree_php_examples"
+alias btpythonex="cd ~/bt/braintree-python-examples"
+alias btrubyex="cd ~/bt/braintree-ruby-examples"
+
+fknkillgw() {
+  if [[ -f /tmp/gateway-unicorn.pid ]]; then
+    cat /tmp/gateway-unicorn.pid | xargs kill -9
+    rm /tmp/gateway-unicorn.pid
+  else
+    echo gateway-unicorn: no process found
+  fi
+}
+alias fkndie="killall --user $USER -TERM ruby rake thin node nginx apache2 haproxy python php;fknkillgw;redis-cli flushall"
+alias fknstart="fkndie && foreman start"
+alias fknsetupapps="(cd ~/bt/authy && git pull && bundle install --local && dbdo && cd ~/bt/gateway && git pull && bundle install --local && dbdo && cd ~/bt/provisioner && git pull && bundle && dbdo && cd ~/bt/integrations && git pull && bundle && dbdo)"
+alias flushdns="sudo killall -HUP mDNSResponder"
+
+alias mysqlstart='sudo /opt/local/bin/mysqld_safe5'
+alias mysqlstop='/opt/local/bin/mysqladmin5 -u root shutdown'
+
+alias sourcebash="source ~/.bash_login"
+
+alias textedit="open -a TextEdit"
+alias openx="open . -a xcode"
+
+alias podn="pod --no-repo-update"
+
+case "$(uname)" in
+    Linux) alias ls='ls -F --color=auto';;
+    *) alias ls='ls -FG';;
+esac
+alias la='ls -a'
+alias ll='ls -alh'
+
+alias glog='tail -f ~/bt/gateway/log/development.log| grep -E "Processing|Parameters|Completed" -B1'
+
+alias showfeature="~/bt/system-scripts/random/showfeature"
+
+revof () {
+  pushd -q ~/bt/gateway
+  git fetch -q
+  curl -s "https://$1.braintreegateway.com/revision" | cut -d- -f1 | xargs git name-rev
+  popd -q
+}
+
+alias revof-sandbox="revof sandbox"
+alias revof-production="revof www"
+alias revof-qa="revof qa"
+alias revof-qa2="revof qa2"
+alias revof-all="
+  echo -n 'production: '; revof-production;
+  echo -n 'sandbox: '; revof-sandbox;
+  echo -n 'qa: '; revof-qa;
+  echo -n 'qa2: '; revof-qa2;"
+
+alias revof-marketing="pushd -q ~/bt/braintreepayments.com; curl -s http://www.braintreepayments.com/revision | cut -d- -f1 | xargs git name-rev; popd -q"
+
+markdown () {
+  ruby -rrubygems -e "require 'redcarpet'; puts Redcarpet::Markdown.new(Redcarpet::Render::HTML, :fenced_code_block => true).render(File.read('$1'))" > /tmp/markdown.html && open /tmp/markdown.html
+}
+
+pbpush () {
+  pbpaste  | ssh $1 'pbcopy'
+}
+
+rc () {
+  if type bundle > /dev/null; then
+    if [ -f Gemfile ]; then
+      bundle exec rake_commit $*
+    else
+      /usr/bin/rake_commit
+    fi
+  else
+    rake_commit $*
+fi
+}
+
+ressh() {
+  for agent_sock in /tmp/ssh-*/agent.*; do
+    export SSH_AUTH_SOCK=${agent_sock}
+    if ssh-add -l &> /dev/null; then
+      echo "export SSH_AUTH_SOCK=${agent_sock}"
+    fi
+  done
+}
+
+alias print256colors='(x=`tput op` y=`printf %80s`;for i in {0..256};do o=00$i;echo -e ${o:${#o}-3:3} `tput setaf $i;tput setab $i`${y// /=}$x;done)'
+
+alias pbpush-yoshi='pbpush pair@yoshi.local'
+alias pbpush-peach='pbpush pair@peach.local'
+alias pbpush-mario='pbpush pair@mario.local'
+alias pbpush-luigi='pbpush pair@luigi.local'
+alias pbpush-goomba='pbpush pair@goomba.local'
+alias pbpush-koopa='pbpush pair@koopa.local'
+alias pbpush-toad='pbpush pair@toad.local'
+alias pbpush-bulletbill='pbpush pair@bulletbill.local'
+alias pbpush-shyguy='pbpush pair@shyguy.local'
+alias pbpush-walle='pbpush pair@walle.local'
+alias pbpush-buzz='pbpush pair@buzz.local'
+alias pbpush-nemo='pbpush pair@nemo.local'
+alias pbpush-crush='pbpush pair@crush.local'
+alias pbpush-sulley='pbpush pair@sulley.local'
+alias pbpush-remy='pbpush pair@remy.local'
+alias pbpush-syndrome='pbpush pair@syndrome.local'
+alias butts="curl http://mario.local/hammertime/add_for/butts"
+alias barbra="curl http://mario.local/hammertime/add_for/barbra"
+alias practice="curl http://mario.local/hammertime/add_for/practice"
+alias fixtmux="pkill -SIGWINCH -f tmux"
+alias warp="afplay ~/bt/system-scripts/pairing_stations/warp_pipe.wav; ssh -A -p 58224 warp1.braintreepayments.com"
+
+alias bt-setup-ssh="~/bt/system-scripts/pairing_stations/setup-ssh ~/Dropbox/devs\\ shared/devs.kdb"
+alias vague="cd ~/bt/dev-box && vagrant up && vagrant ssh -- -A"
+alias bt-filter="sed \"s/[0-9]\{13,16\}/[FILTERED]/g\""
+
+if [[ `uname` == 'Linux' ]]; then
+  alias bt-pretty-dstat='dstat -tcdnm 10'
+else
+  alias top='top -o cpu'
+fi
+
+if [ -f /Applications/Emacs.app/Contents/MacOS/Emacs ]; then
+  alias emacs="/Applications/Emacs.app/Contents/MacOS/Emacs"
+fi
+
+alias npm-exec='env PATH="$(npm bin):$PATH"'
+alias ne='npm-exec'
+alias nvnuke='[ -e .nvmrc ] && nvm deactivate && nvm uninstall "$(cat .nvmrc)" && nvm install && rm -rf ./node_modules && npm install'
+
+cleanpair () {
+  message="CONGRATS: Your pair is safe to use and has no unfinished commits laying around."
+  for dir_name in $( ls ~/bt );  do
+    dpath=~/bt/$dir_name
+    if [[ -d $dpath ]]; then
+      if [[ -z $( git -C $dpath status | grep "nothing to commit, working directory clean" ) ]]; then
+        if [[ "$1" == "-f" ]]; then
+          git -C $dpath add -A
+          git -C $dpath stash > /dev/null 2> /dev/null
+          if [[ $? -eq 0 ]]; then
+            print "Changes found in $dir_name have been stashed"
+          else
+            print "Unable to stash changes in $dir_name; probably no git user configured!"
+            message="UH-OH: I was unable to stash your dirty files!"
+          fi
+        else
+          message="UH-OH: You've got some unfinished commits lying around."
+          echo "$dir_name has some dirty files: "
+          cat <(git -C $dpath ls-files -md | sed 's/^/  /') <(git -C $dpath ls-files --other --exclude-standard | sed 's/^/  /') <(git -C $dpath diff-index --cached --name-only HEAD 2>/dev/null | sed 's/^/  /') | sort | uniq
+          echo
+        fi
+      fi
+    fi
+  done
+  echo $message
+}
+
+alias spair='ssh -t support01.chi vpair'
+alias dspec='grep -E "^ *describe[ \(]|^ *context[ \(]|^ *it[ \(]"'
+alias bt-spec-summary=rspec-summary
+
+cosmos-clone() {
+  for repo do
+    git clone git@github.braintreeps.com:cosmos/$repo
+  done
+}
+
+case "$(uname)" in
+  Linux) alias psg='ps -eo pid,user,start_time,cmd --sort -etime | fgrep -v "grep" | grep -E';;
+  *)     alias psg='ps -eo pid,user,start,command | fgrep -v "grep" | grep -E';;
+esac
